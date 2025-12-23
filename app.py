@@ -6,12 +6,17 @@ st.set_page_config(page_title="Olympic Analysis", layout="wide")
 
 # Load data safely
 @st.cache_data
+
 def load_data():
     df = pd.read_csv("athlete_events.csv")
     region_df = pd.read_csv("noc_regions.csv")
     df = df.merge(region_df, on="NOC", how="left")
-    return df
 
+    # This creates the Gold, Silver, and Bronze columns that helper.py needs
+    # We use .get_dummies() and convert to integers (0 or 1)
+    df = pd.concat([df, pd.get_dummies(df['Medal']).astype(int)], axis=1)
+
+    return df
 df = load_data()
 
 st.sidebar.title("Olympic Analysis")
